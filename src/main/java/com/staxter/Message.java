@@ -1,9 +1,14 @@
 package com.staxter;
 
+/**
+ * Represents a message object.
+ * Contains plain text string and a counter.
+ * Counter and string could be used in any way.
+ */
 public class Message {
 
-    private int counter;
-    private String message;
+    private final int counter;
+    private final String message;
 
     public Message(int counter, String message) {
         this.counter = counter;

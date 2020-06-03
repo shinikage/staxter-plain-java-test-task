@@ -1,10 +1,19 @@
 package com.staxter.system;
 
-public abstract class PlayerSystem<TMessage> {
+/**
+ * Represents an interface for system of players,
+ * which send messages to each other.
+ *
+ */
+public interface PlayerSystem {
 
-    public abstract void startMessaging();
+    /**
+     * A method to initiate messaging process between players.
+     * The players are initialized and then the messaging is started.
+     */
+    void startMessaging();
 
-    public static class PlayerSystemCreationException extends RuntimeException {
+    class PlayerSystemCreationException extends RuntimeException {
         public PlayerSystemCreationException(String message) {
             super(message);
         }

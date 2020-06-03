@@ -4,11 +4,20 @@ import com.staxter.Message;
 import com.staxter.player.PlainPlayer;
 import com.staxter.player.Player;
 
+import java.util.LinkedList;
 import java.util.Optional;
 
-public class PlainSystem extends PlayerSystem<Message> {
+/**
+ * A plain single-threaded single-process implementation of the system of players.
+ */
+public class PlainSystem implements PlayerSystem {
 
     private final int maxMessagesCount;
+
+    /**
+     * Creates a system
+     * @param maxMessagesCount a maximum number of messages which messaging initiator can send and receive.
+     */
 
     public PlainSystem(int maxMessagesCount) {
         if (maxMessagesCount <= 0) {
@@ -18,14 +27,29 @@ public class PlainSystem extends PlayerSystem<Message> {
         this.maxMessagesCount = maxMessagesCount;
     }
 
+    /**
+     * Creates two players and two queues for messages.
+     * First player writes to the first queue and the second player reads messages from the first queue.
+     * Second player writes to the second queue and the first player reads messages from the second queue.
+     * The process happens until the number of send messages and the number of received messages reach the maximum
+     * messages counter, specified in the constructor.
+     */
     @Override
     public void startMessaging() {
         PlainPlayer first = new PlainPlayer("first", this::buildMessage);
         PlainPlayer second = new PlainPlayer("second", this::buildMessage);
-        Message m = new Message(1, "Hello ");
+        Message message = new Message(1, "Hello ");
+
+        //first player sends messages to this queue and the second player reads from it
+        LinkedList<Message> firstQueue = new LinkedList<>();
+        //second player sends messages to this queue and the first player reads from it
+        LinkedList<Message> secondQueue = new LinkedList<>();
+
         while(first.getSentMessages() != maxMessagesCount && first.getReceivedMessages() != maxMessagesCount){
-            m = first.send(second, m);
-            m = second.send(first, m);
+            first.send(firstQueue, message);
+            message = second.receive(firstQueue);
+            second.send(secondQueue, message);
+            message = first.receive(secondQueue);
         }
     }
 
